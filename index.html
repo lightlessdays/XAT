@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crookshanks Academy - Daily Progress</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #FFFFFF;
+            --accent-color: #555555;
+            --bg-color: #FFFFFF;
+            --text-color: #000000;
+            --table-header: #F5F5F5;
+            --table-row-even: #FAFAFA;
+            --table-row-hover: #F0F0F0;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --progress-bar: #000000;
+            --font-size: 16px;
+            --transition-speed: 0.3s;
+        }
+
+        .dark-theme {
+            --primary-color: #FFFFFF;
+            --secondary-color: #000000;
+            --accent-color: #AAAAAA;
+            --bg-color: #121212;
+            --text-color: #FFFFFF;
+            --table-header: #1E1E1E;
+            --table-row-even: #161616;
+            --table-row-hover: #2A2A2A;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --progress-bar: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: var(--font-size);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .title-section h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 70%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .title-section p {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            max-width: 600px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .icon-button {
+            background: none;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .icon-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .icon-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Progress Section */
+        .progress-section {
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background-color: var(--table-header);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--progress-bar);
+            border-radius: 6px;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg, 
+                transparent 25%, 
+                rgba(255,255,255,0.1) 25%, 
+                rgba(255,255,255,0.1) 50%, 
+                transparent 50%, 
+                transparent 75%, 
+                rgba(255,255,255,0.1) 75%, 
+                rgba(255,255,255,0.1)
+            );
+            background-size: 20px 20px;
+            animation: progressStripes 1s linear infinite;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            gap: 15px;
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+
+        .filter-button {
+            background: var(--table-header);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+
+        .filter-button.active {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        thead {
+            background-color: var(--table-header);
+        }
+
+        th {
+            padding: 18px 15px;
+            text-align: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+
+        tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        td {
+            padding: 16px 15px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        .day-cell {
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 120px;
+        }
+
+        .item-name {
+            font-weight: 500;
+            min-width: 300px;
+        }
+
+        .checkbox-cell {
+            width: 150px;
+            text-align: center;
+        }
+
+        .checkbox-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-label {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* MINIMALIST CHECKBOXES */
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: transparent; /* Transparent background */
+            border: 2px solid var(--primary-color); /* Border only */
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        input[type="checkbox"]:hover {
+            transform: scale(1.1);
+            border-color: var(--accent-color);
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: var(--primary-color); /* Fill when checked */
+            border-color: var(--primary-color);
+            animation: checkPulse 0.5s ease;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--secondary-color);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        input[type="checkbox"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: var(--accent-color);
+        }
+
+        input[type="checkbox"]:disabled:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        @keyframes checkPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .item-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            padding: 5px 0;
+            position: relative;
+        }
+
+        .item-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .item-link:hover::after {
+            width: 100%;
+        }
+
+        /* Modal Styles with Dark Blurred Background */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 1001;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+
+        .setting-option {
+            margin-bottom: 25px;
+        }
+
+        .setting-option label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--table-header);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .font-size-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            background-color: var(--table-row-even);
+            font-weight: 600;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-3px);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 1.2rem;
+            background-color: var(--table-row-even);
+        }
+
+        .calendar-day.checked {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        /* Banner Modal */
+        .banner-container {
+            text-align: center;
+        }
+
+        .banner-image {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .banner-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, var(--table-header) 25%, var(--table-row-even) 25%, var(--table-row-even) 50%, var(--table-header) 50%, var(--table-header) 75%, var(--table-row-even) 75%, var(--table-row-even));
+            background-size: 40px 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: placeholderAnim 2s linear infinite;
+        }
+
+        .banner-placeholder i {
+            font-size: 4rem;
+            color: var(--accent-color);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes progressStripes {
+            from { background-position: 0 0; }
+            to { background-position: 20px 0; }
+        }
+
+        @keyframes placeholderAnim {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        /* No Items Message */
+        .no-items-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .header-controls {
+                align-self: flex-end;
+            }
+            
+            .title-section h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+            }
+            
+            .checkbox-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .checkbox-group {
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .filter-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .title-section p {
+                font-size: 0.9rem;
+            }
+            
+            .icon-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .checkbox-label {
+                font-size: 0.7rem;
+            }
+            
+            .filter-button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="title-section">
+                <h1>Crookshanks Academy</h1>
+                <p>Master your skills with 100 days of focused practice. Track your progress and maintain consistency.</p>
+            </div>
+            <div class="header-controls">
+                <button class="icon-button" id="settingsButton" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="icon-button" id="calendarButton" title="Check-in Calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                </button>
+                <button class="icon-button" id="graphButton" title="Progress Graph">
+                    <i class="fas fa-chart-line"></i>
+                </button>
+                <button class="icon-button" id="infoButton" title="Information">
+                    <i class="fas fa-info"></i>
+                </button>
+            </div>
+        </header>
+
+        <section class="progress-section">
+            <div class="progress-info">
+                <div class="progress-text">
+                    <h2>Your Progress: <span id="completedCount">0</span> / 100 Days</h2>
+                    <p id="progressPercentage">0% Complete</p>
+                </div>
+                <div class="progress-actions">
+                    <button class="icon-button small" id="resetButton" title="Reset Progress">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </section>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <button class="filter-button active" id="filterAll">
+                <i class="fas fa-list"></i> All Items
+            </button>
+            <button class="filter-button" id="filterNeedReview">
+                <i class="fas fa-eye"></i> Need Review
+            </button>
+            <button class="filter-button" id="filterCompleted">
+                <i class="fas fa-check-circle"></i> Completed
+            </button>
+        </div>
+
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day Number</th>
+                        <th>Item Name</th>
+                        <th>Completed</th>
+                        <th>Need Review</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTable">
+                    <!-- Items will be generated by JavaScript -->
+                </tbody>
+            </table>
+            <div class="no-items-message" id="noItemsMessage">
+                <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>No items found</h3>
+                <p>Try changing your filter settings</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>Crookshanks Academy Daily Mastery Series &copy; 2023</p>
+            <p>Persistency is the key to mastery. Keep going!</p>
+        </footer>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-button" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-option">
+                    <label for="themeSelect">Theme</label>
+                    <div class="theme-toggle">
+                        <div class="theme-option active" data-theme="light">Light</div>
+                        <div class="theme-option" data-theme="dark">Dark</div>
+                    </div>
+                </div>
+                <div class="setting-option">
+                    <label for="fontSizeSlider">Font Size</label>
+                    <div class="slider-container">
+                        <span>A</span>
+                        <input type="range" id="fontSizeSlider" min="12" max="24" value="16">
+                        <span>A</span>
+                        <span class="font-size-value" id="fontSizeValue">16px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Modal -->
+    <div class="modal" id="calendarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Check-in Calendar</h2>
+                <button class="close-button" id="closeCalendar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Your daily check-in history. Smileys indicate days you checked in.</p>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Modal -->
+    <div class="modal" id="graphModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Progress Analytics</h2>
+                <button class="close-button" id="closeGraph">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-chart-line" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                    <h3>Feature Under Progress</h3>
+                    <p>This section will display detailed analytics of your progress including questions answered, correct answers, and incorrect answers.</p>
+                    <p>Check back soon for this feature!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>About Crookshanks Academy</h2>
+                <button class="close-button" id="closeInfo">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="banner-container">
+                    <div class="banner-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <p>Welcome to the Crookshanks Academy Daily Mastery Series. This program is designed to help you build expertise through consistent daily practice.</p>
+                    <p>Each day presents a new challenge to complete. Track your progress, mark items for review, and maintain your streak to achieve mastery.</p>
+                    <p>Remember: The key to success is not in doing extraordinary things, but in doing ordinary things consistently.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data
+        const totalItems = 100;
+        const baseUrl = "https://www.xat.crookshanksacademy.com/dms/";
+        
+        // Filter states
+        let currentFilter = 'all';
+        
+        // Sample item names
+        const itemNames = [
+            "Data Types and Variables", "Control Structures", "Functions and Methods", 
+            "Object-Oriented Principles", "Arrays and Collections", "String Manipulation",
+            "Error Handling", "File I/O Operations", "Recursion Techniques", "Algorithm Analysis",
+            "Sorting Algorithms", "Searching Algorithms", "Data Structures Intro", "Linked Lists",
+            "Stacks and Queues", "Trees and Graphs", "Hash Tables", "Dynamic Programming",
+            "Greedy Algorithms", "Backtracking", "Bit Manipulation", "Memory Management",
+            "Pointers and References", "Concurrency Basics", "Thread Management",
+            "Synchronization", "Networking Fundamentals", "Socket Programming", "Web Protocols",
+            "Database Concepts", "SQL Queries", "Database Design", "Normalization",
+            "Indexing Strategies", "Transaction Management", "NoSQL Databases", "API Design",
+            "RESTful Services", "GraphQL Basics", "Authentication & Authorization",
+            "Web Security", "Cryptography Basics", "Web Development", "HTML & CSS",
+            "JavaScript Fundamentals", "DOM Manipulation", "Event Handling", "AJAX & Fetch",
+            "Frontend Frameworks", "State Management", "Backend Development", "Server-side Logic",
+            "Middleware Concepts", "Caching Strategies", "Load Balancing", "Scalability",
+            "Microservices", "Containerization", "Orchestration Tools", "CI/CD Pipelines",
+            "Testing Strategies", "Unit Testing", "Integration Testing", "End-to-End Testing",
+            "Test-Driven Development", "Behavior-Driven Development", "Performance Testing",
+            "Security Testing", "Code Quality", "Code Review", "Refactoring",
+            "Design Patterns", "Architectural Patterns", "Cloud Computing", "Cloud Services",
+            "Serverless Architecture", "Monitoring & Logging", "Alerting Systems",
+            "Disaster Recovery", "Business Continuity", "Project Management", "Agile Methodologies",
+            "Scrum Framework", "Kanban Practices", "Version Control", "Git Workflows",
+            "Code Collaboration", "Documentation", "Technical Writing", "Presentation Skills",
+            "Problem Solving", "Critical Thinking", "Debugging Techniques", "System Design",
+            "Capacity Planning", "Estimation Techniques", "Career Development", "Interview Skills",
+            "Negotiation Tactics", "Leadership Skills", "Team Collaboration", "Mentorship",
+            "Continuous Learning", "Knowledge Sharing", "Personal Branding", "Community Building"
+        ];
+
+        // Generate items if not already in localStorage - ABSOLUTELY NO ITEMS CHECKED BY DEFAULT
+        function initializeItems() {
+            if (!localStorage.getItem('dms-items')) {
+                const items = [];
+                for (let i = 1; i <= totalItems; i++) {
+                    const itemName = itemNames[i-1] || `Day ${i} Challenge`;
+                    items.push({
+                        id: i,
+                        name: itemName,
+                        completed: false, // NO items checked by default
+                        needsReview: false, // NO items marked for review by default
+                        lastUpdated: null
+                    });
+                }
+                localStorage.setItem('dms-items', JSON.stringify(items));
+            } else {
+                // Double-check that no items are checked
+                const items = JSON.parse(localStorage.getItem('dms-items'));
+                let needsFix = false;
+                items.forEach(item => {
+                    if (item.completed === true) {
+                        item.completed = false;
+                        item.needsReview = false;
+                        item.lastUpdated = null;
+                        needsFix = true;
+                    }
+                });
+                if (needsFix) {
+                    localStorage.setItem('dms-items', JSON.stringify(items));
+                }
+            }
+            
+            // Initialize theme
+            if (!localStorage.getItem('dms-theme')) {
+                localStorage.setItem('dms-theme', 'light');
+            }
+            
+            // Initialize font size
+            if (!localStorage.getItem('dms-font-size')) {
+                localStorage.setItem('dms-font-size', '16');
+            }
+            
+            // Initialize calendar data with FIXED LOGIC
+            initializeCalendarData();
+            
+            // Initialize filter state
+            if (!localStorage.getItem('dms-filter')) {
+                localStorage.setItem('dms-filter', 'all');
+            } else {
+                currentFilter = localStorage.getItem('dms-filter');
+            }
+            
+            updateTheme();
+            updateFontSize();
+            updateFilterButtons();
+        }
+
+        // FIXED: Initialize calendar data with proper logic
+        function initializeCalendarData() {
+            if (!localStorage.getItem('dms-calendar')) {
+                const calendar = {};
+                const today = new Date();
+                
+                // Generate 30 days from today backwards
+                for (let i = 0; i < 30; i++) {
+                    const date = new Date();
+                    date.setDate(today.getDate() - i);
+                    const dateString = date.toISOString().split('T')[0];
+                    calendar[dateString] = false; // No days checked by default
+                }
+                localStorage.setItem('dms-calendar', JSON.stringify(calendar));
+            }
+        }
+
+        // Load items from localStorage
+        function loadItems() {
+            const items = JSON.parse(localStorage.getItem('dms-items'));
+            return items;
+        }
+
+        // Get filtered items based on current filter
+        function getFilteredItems() {
+            const items = loadItems();
+            
+            switch(currentFilter) {
+                case 'needReview':
+                    return items.filter(item => item.needsReview);
+                case 'completed':
+                    return items.filter(item => item.completed);
+                case 'all':
+                default:
+                    return items;
+            }
+        }
+
+        // Save items to localStorage
+        function saveItems(items) {
+            localStorage.setItem('dms-items', JSON.stringify(items));
+            updateProgress();
+            updateCalendar();
+            renderItems(); // Re-render to reflect changes
+        }
+
+        // Update progress bar and count
+        function updateProgress() {
+            const items = loadItems();
+            const completedCount = items.filter(item => item.completed).length;
+            const percentage = Math.round((completedCount / totalItems) * 100);
+            
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('progressPercentage').textContent = `${percentage}% Complete`;
+            
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${percentage}%`;
+            
+            // Add animation when progress increases
+            if (completedCount > 0) {
+                progressFill.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    progressFill.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // FIXED: Update calendar logic - mark today as checked if ANY item is completed today
+        function updateCalendar() {
+            const calendarData = JSON.parse(localStorage.getItem('dms-calendar'));
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
+            
+            // Check if any items were completed today
+            const items = loadItems();
+            const hasCompletedToday = items.some(item => {
+                if (!item.lastUpdated) return false;
+                const itemDate = new Date(item.lastUpdated).toISOString().split('T')[0];
+                return item.completed && itemDate === todayString;
+            });
+            
+            // Update today's status
+            if (hasCompletedToday) {
+                calendarData[todayString] = true;
+            }
+            
+            // Ensure all 30 days exist in calendar
+            const allDates = {};
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const dateString = date.toISOString().split('T')[0];
+                allDates[dateString] = calendarData[dateString] || false;
+            }
+            
+            localStorage.setItem('dms-calendar', JSON.stringify(allDates));
+            
+            // Update calendar display if modal is open
+            if (document.getElementById('calendarModal').style.display === 'flex') {
+                renderCalendar();
+            }
+        }
+
+        // FIXED: Render calendar with all days including in-between days
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+            
+            const calendarData = JSON.parse(localStorage.getItem('dms-calendar'));
+            const today = new Date();
+            
+            // Get dates for the last 30 days
+            const dates = [];
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                dates.push(date);
+            }
+            
+            dates.forEach(date => {
+                const dateString = date.toISOString().split('T')[0];
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                
+                // Check if this date is in calendar data
+                if (calendarData[dateString]) {
+                    dayDiv.classList.add('checked');
+                    dayDiv.innerHTML = '<i class="fas fa-smile"></i>';
+                } else {
+                    dayDiv.innerHTML = '<i class="fas fa-cloud-rain"></i>';
+                }
+                
+                // Add date as title
+                const dayOfMonth = date.getDate();
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const displayDate = `${monthNames[date.getMonth()]} ${dayOfMonth}`;
+                dayDiv.title = displayDate;
+                
+                calendarGrid.appendChild(dayDiv);
+            });
+        }
+
+        // Function to update review checkbox state
+        function updateReviewCheckboxState(itemId, isCompleted) {
+            const reviewCheckbox = document.getElementById(`review-${itemId}`);
+            if (reviewCheckbox) {
+                reviewCheckbox.disabled = !isCompleted;
+                if (!isCompleted) {
+                    reviewCheckbox.checked = false;
+                }
+            }
+        }
+
+        // Update filter buttons
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            if (currentFilter === 'all') {
+                document.getElementById('filterAll').classList.add('active');
+            } else if (currentFilter === 'needReview') {
+                document.getElementById('filterNeedReview').classList.add('active');
+            } else if (currentFilter === 'completed') {
+                document.getElementById('filterCompleted').classList.add('active');
+            }
+        }
+
+        // Render items table
+        function renderItems() {
+            const items = getFilteredItems();
+            const tableBody = document.getElementById('itemsTable');
+            const noItemsMessage = document.getElementById('noItemsMessage');
+            
+            tableBody.innerHTML = '';
+            
+            if (items.length === 0) {
+                tableBody.style.display = 'none';
+                noItemsMessage.style.display = 'block';
+            } else {
+                tableBody.style.display = 'table-row-group';
+                noItemsMessage.style.display = 'none';
+                
+                items.forEach((item) => {
+                    const row = document.createElement('tr');
+                    
+                    // Day cell
+                    const dayCell = document.createElement('td');
+                    dayCell.className = 'day-cell';
+                    dayCell.textContent = `Day ${item.id}`;
+                    row.appendChild(dayCell);
+                    
+                    // Item name with link
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'item-name';
+                    const link = document.createElement('a');
+                    link.href = `${baseUrl}${item.id}.html`;
+                    link.target = '_blank';
+                    link.className = 'item-link';
+                    link.textContent = item.name;
+                    nameCell.appendChild(link);
+                    row.appendChild(nameCell);
+                    
+                    // Checkbox cell - Completed
+                    const checkboxCell = document.createElement('td');
+                    checkboxCell.className = 'checkbox-cell';
+                    
+                    const completedGroup = document.createElement('div');
+                    completedGroup.className = 'checkbox-group';
+                    
+                    const completedCheckbox = document.createElement('input');
+                    completedCheckbox.type = 'checkbox';
+                    completedCheckbox.id = `completed-${item.id}`;
+                    completedCheckbox.checked = item.completed;
+                    completedCheckbox.addEventListener('change', () => {
+                        const allItems = loadItems();
+                        const currentItem = allItems.find(i => i.id === item.id);
+                        if (currentItem) {
+                            currentItem.completed = completedCheckbox.checked;
+                            currentItem.lastUpdated = new Date().toISOString();
+                            
+                            // If item is not completed, also uncheck "needs review"
+                            if (!currentItem.completed) {
+                                currentItem.needsReview = false;
+                            }
+                            
+                            saveItems(allItems);
+                        }
+                    });
+                    
+                    const completedLabel = document.createElement('span');
+                    completedLabel.className = 'checkbox-label';
+                    completedLabel.textContent = 'Completed';
+                    completedLabel.setAttribute('for', `completed-${item.id}`);
+                    
+                    completedGroup.appendChild(completedCheckbox);
+                    completedGroup.appendChild(completedLabel);
+                    checkboxCell.appendChild(completedGroup);
+                    
+                    row.appendChild(checkboxCell);
+                    
+                    // Checkbox cell - Needs Review
+                    const reviewCell = document.createElement('td');
+                    reviewCell.className = 'checkbox-cell';
+                    
+                    const reviewGroup = document.createElement('div');
+                    reviewGroup.className = 'checkbox-group';
+                    
+                    const reviewCheckbox = document.createElement('input');
+                    reviewCheckbox.type = 'checkbox';
+                    reviewCheckbox.id = `review-${item.id}`;
+                    reviewCheckbox.checked = item.needsReview;
+                    reviewCheckbox.disabled = !item.completed;
+                    reviewCheckbox.addEventListener('change', () => {
+                        const allItems = loadItems();
+                        const currentItem = allItems.find(i => i.id === item.id);
+                        if (currentItem) {
+                            currentItem.needsReview = reviewCheckbox.checked;
+                            saveItems(allItems);
+                        }
+                    });
+                    
+                    const reviewLabel = document.createElement('span');
+                    reviewLabel.className = 'checkbox-label';
+                    reviewLabel.textContent = 'Need Review';
+                    reviewLabel.setAttribute('for', `review-${item.id}`);
+                    
+                    reviewGroup.appendChild(reviewCheckbox);
+                    reviewGroup.appendChild(reviewLabel);
+                    reviewCell.appendChild(reviewGroup);
+                    
+                    row.appendChild(reviewCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            updateProgress();
+        }
+
+        // Update theme
+        function updateTheme() {
+            const theme = localStorage.getItem('dms-theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                document.querySelectorAll('[data-theme="dark"]').forEach(el => el.classList.add('active'));
+                document.querySelectorAll('[data-theme="light"]').forEach(el => el.classList.remove('active'));
+            } else {
+                document.body.classList.remove('dark-theme');
+                document.querySelectorAll('[data-theme="light"]').forEach(el => el.classList.add('active'));
+                document.querySelectorAll('[data-theme="dark"]').forEach(el => el.classList.remove('active'));
+            }
+        }
+
+        // Update font size
+        function updateFontSize() {
+            const fontSize = localStorage.getItem('dms-font-size') || '16';
+            document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+            document.getElementById('fontSizeSlider').value = fontSize;
+            document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+        }
+
+        // Set filter
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            localStorage.setItem('dms-filter', filterType);
+            updateFilterButtons();
+            renderItems();
+        }
+
+        // Reset all progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This will uncheck all items and clear review marks.')) {
+                const items = loadItems();
+                
+                // Uncheck all items
+                items.forEach(item => {
+                    item.completed = false;
+                    item.needsReview = false;
+                    item.lastUpdated = null;
+                });
+                
+                saveItems(items);
+                
+                // Also reset calendar
+                initializeCalendarData();
+                
+                // Reset filter to all
+                setFilter('all');
+                
+                // Show reset confirmation
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.transition = 'none';
+                progressFill.style.width = '0%';
+                setTimeout(() => {
+                    progressFill.style.transition = 'width 1s cubic-bezier(0.22, 0.61, 0.36, 1)';
+                }, 50);
+                
+                // Refresh calendar if open
+                if (document.getElementById('calendarModal').style.display === 'flex') {
+                    renderCalendar();
+                }
+            }
+        }
+
+        // Modal controls
+        function setupModals() {
+            // Settings modal
+            document.getElementById('settingsButton').addEventListener('click', () => {
+                document.getElementById('settingsModal').style.display = 'flex';
+            });
+            
+            document.getElementById('closeSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').style.display = 'none';
+            });
+            
+            // Calendar modal
+            document.getElementById('calendarButton').addEventListener('click', () => {
+                document.getElementById('calendarModal').style.display = 'flex';
+                renderCalendar();
+            });
+            
+            document.getElementById('closeCalendar').addEventListener('click', () => {
+                document.getElementById('calendarModal').style.display = 'none';
+            });
+            
+            // Graph modal
+            document.getElementById('graphButton').addEventListener('click', () => {
+                document.getElementById('graphModal').style.display = 'flex';
+            });
+            
+            document.getElementById('closeGraph').addEventListener('click', () => {
+                document.getElementById('graphModal').style.display = 'none';
+            });
+            
+            // Info modal
+            document.getElementById('infoButton').addEventListener('click', () => {
+                document.getElementById('infoModal').style.display = 'flex';
+            });
+            
+            document.getElementById('closeInfo').addEventListener('click', () => {
+                document.getElementById('infoModal').style.display = 'none';
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+            
+            // Theme selection
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const theme = option.getAttribute('data-theme');
+                    localStorage.setItem('dms-theme', theme);
+                    updateTheme();
+                    
+                    // Update active state
+                    document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
+                    option.classList.add('active');
+                });
+            });
+            
+            // Font size slider
+            document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
+                const fontSize = e.target.value;
+                document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+                document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+                localStorage.setItem('dms-font-size', fontSize);
+            });
+            
+            // Reset button
+            document.getElementById('resetButton').addEventListener('click', resetProgress);
+            
+            // Filter buttons
+            document.getElementById('filterAll').addEventListener('click', () => {
+                setFilter('all');
+            });
+            
+            document.getElementById('filterNeedReview').addEventListener('click', () => {
+                setFilter('needReview');
+            });
+            
+            document.getElementById('filterCompleted').addEventListener('click', () => {
+                setFilter('completed');
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clear any existing checked items
+            if (localStorage.getItem('dms-items')) {
+                localStorage.removeItem('dms-items');
+            }
+            
+            initializeItems();
+            renderItems();
+            setupModals();
+            
+            // TEST: Add some sample data to show calendar working
+            setTimeout(() => {
+                // This is just for testing - shows how calendar works with dates
+                console.log("Calendar test: Today is marked if you complete any item");
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
