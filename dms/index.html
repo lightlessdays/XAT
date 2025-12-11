@@ -1,1 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Challenge - Crookshanks Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #000000;
+            --secondary-color: #FFFFFF;
+            --accent-color: #555555;
+            --bg-color: #FFFFFF;
+            --text-color: #000000;
+            --table-header: #F5F5F5;
+            --table-row-even: #FAFAFA;
+            --table-row-hover: #F0F0F0;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --progress-bar: #000000;
+            --font-size: 16px;
+            --transition-speed: 0.3s;
+            --correct-color: #4CAF50;
+            --incorrect-color: #F44336;
+            --warning-color: #FF9800;
+        }
 
+        .dark-theme {
+            --primary-color: #FFFFFF;
+            --secondary-color: #000000;
+            --accent-color: #AAAAAA;
+            --bg-color: #121212;
+            --text-color: #FFFFFF;
+            --table-header: #1E1E1E;
+            --table-row-even: #161616;
+            --table-row-hover: #2A2A2A;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --progress-bar: #FFFFFF;
+            --correct-color: #2E7D32;
+            --incorrect-color: #C62828;
+            --warning-color: #EF6C00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: var(--font-size);
+            line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Mobile Warning */
+        .mobile-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            flex-direction: column;
+        }
+
+        .mobile-warning i {
+            font-size: 4rem;
+            color: var(--warning-color);
+            margin-bottom: 20px;
+        }
+
+        .mobile-warning h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .mobile-warning p {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            max-width: 400px;
+        }
+
+        /* Header */
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--primary-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .icon-button {
+            background: none;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .icon-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Stopwatch Timer */
+        .stopwatch-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background-color: var(--table-header);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stopwatch {
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: var(--primary-color);
+        }
+
+        .stopwatch-icon {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        /* Main Content Container */
+        .content-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+        }
+
+        /* RC Section */
+        .rc-section {
+            flex: 1;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .rc-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .rc-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .rc-text {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .rc-text p {
+            margin-bottom: 15px;
+        }
+
+        /* MCQ Section */
+        .mcq-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .mcq-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .mcq-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
+
+        /* Question Container */
+        .question-container {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .question-container:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Options */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background-color: var(--table-row-even);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background-color: var(--table-row-hover);
+            transform: translateX(3px);
+        }
+
+        .option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--table-header);
+        }
+
+        .option.correct {
+            background-color: rgba(76, 175, 80, 0.15);
+            border-color: var(--correct-color);
+        }
+
+        .option.incorrect {
+            background-color: rgba(244, 67, 54, 0.15);
+            border-color: var(--incorrect-color);
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Custom Checkbox WITHOUT tick/cross */
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .option.selected .custom-checkbox {
+            background-color: var(--primary-color);
+        }
+
+        .option.selected .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 10px;
+            border: solid var(--secondary-color);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            top: 3px;
+            left: 7px;
+        }
+
+        /* CORRECT - Green with checkmark (selected state) */
+        .option.correct .custom-checkbox {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+        }
+
+        .option.correct.selected .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 10px;
+            border: solid var(--secondary-color);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            top: 3px;
+            left: 7px;
+        }
+
+        /* INCORRECT - Red with checkmark (selected state) */
+        .option.incorrect.selected .custom-checkbox {
+            background-color: var(--incorrect-color);
+            border-color: var(--incorrect-color);
+        }
+
+        .option.incorrect.selected .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 10px;
+            border: solid var(--secondary-color);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            top: 3px;
+            left: 7px;
+        }
+
+        .option-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* Explanation Section */
+        .explanation-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--table-header);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .explanation-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .explanation-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .explanation-text {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        /* Video Container */
+        .video-container {
+            margin-top: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, var(--table-header) 25%, var(--table-row-even) 25%, var(--table-row-even) 50%, var(--table-header) 50%, var(--table-header) 75%, var(--table-row-even) 75%, var(--table-row-even));
+            background-size: 40px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder i {
+            font-size: 3rem;
+            color: var(--accent-color);
+        }
+
+        /* Dismissible Results Panel */
+        .results-panel {
+            padding: 15px 20px;
+            background-color: var(--table-header);
+            border-top: 1px solid var(--border-color);
+            display: none;
+            position: relative;
+        }
+
+        .results-panel.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+            flex-direction: column;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .results-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .results-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat.correct .stat-value {
+            color: var(--correct-color);
+        }
+
+        .stat.incorrect .stat-value {
+            color: var(--incorrect-color);
+        }
+
+        /* Dismiss Button */
+        .dismiss-button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+
+        .dismiss-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: var(--primary-color);
+            transform: rotate(90deg);
+        }
+
+        .dark-theme .dismiss-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .results-message {
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--accent-color);
+            margin-top: 5px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .results-message span {
+            flex: 1;
+        }
+
+        .show-results-button {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+
+        .show-results-button:hover {
+            background-color: var(--table-row-even);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Buttons with Spacing */
+        .buttons-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-button {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .reset-button {
+            background-color: var(--table-header);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .reset-button:hover {
+            background-color: var(--table-row-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+
+        .setting-option {
+            margin-bottom: 25px;
+        }
+
+        .setting-option label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: var(--table-header);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .font-size-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-option.active {
+            border-color: var(--primary-color);
+            background-color: var(--table-row-even);
+            font-weight: 600;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .content-container {
+                flex-direction: row;
+            }
+            
+            .mobile-warning {
+                display: none;
+            }
+            
+            /* Add spacing for mobile landscape */
+            .buttons-container {
+                margin-bottom: 15px;
+            }
+            
+            .results-stats {
+                gap: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .content-container {
+                display: none;
+            }
+            
+            .mobile-warning {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) and (orientation: landscape) {
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stopwatch {
+                font-size: 1rem;
+            }
+            
+            .rc-content, .mcq-content {
+                padding: 15px;
+            }
+            
+            .rc-title, .mcq-title {
+                font-size: 1.3rem;
+            }
+            
+            .question-text {
+                font-size: 1rem;
+            }
+            
+            /* Extra spacing for mobile buttons */
+            .buttons-container {
+                padding: 15px;
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .action-button {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .results-panel {
+                padding: 12px 15px;
+            }
+            
+            .results-stats {
+                gap: 8px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .stat-label {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Add spacing after buttons on all screens */
+        .mcq-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .buttons-container {
+            margin-top: auto;
+        }
+        
+        /* Add extra bottom spacing */
+        .mcq-content {
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Warning -->
+    <div class="mobile-warning">
+        <i class="fas fa-mobile-alt"></i>
+        <h2>Rotate Your Device</h2>
+        <p>Please rotate your device to landscape mode for the best experience. This page is designed for horizontal viewing on mobile devices.</p>
+    </div>
+
+    <!-- Header -->
+    <header class="question-header">
+        <div class="header-left">
+            <h1 id="pageTitle">Day 1: Data Types and Variables</h1>
+            <p id="pageSubtitle">Reading Comprehension with Multiple Choice Questions</p>
+        </div>
+        <div class="header-controls">
+            <div class="stopwatch-container">
+                <i class="fas fa-stopwatch stopwatch-icon"></i>
+                <div class="stopwatch" id="stopwatch">00:00:00</div>
+            </div>
+            <button class="icon-button" id="settingsButton" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button class="icon-button" id="homeButton" title="Back to Dashboard">
+                <i class="fas fa-home"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- RC Section -->
+        <section class="rc-section">
+            <div class="rc-content">
+                <h2 class="rc-title">Reading Comprehension</h2>
+                <div class="rc-text" id="rcText">
+                    <p>In computer programming, data types are an important concept. Variables can store data of different types, and different types can do different things.</p>
+                    
+                    <p>Python has the following data types built-in by default, in these categories:</p>
+                    
+                    <p><strong>Text Type:</strong> str</p>
+                    <p><strong>Numeric Types:</strong> int, float, complex</p>
+                    <p><strong>Sequence Types:</strong> list, tuple, range</p>
+                    <p><strong>Mapping Type:</strong> dict</p>
+                    <p><strong>Set Types:</strong> set, frozenset</p>
+                    <p><strong>Boolean Type:</strong> bool</p>
+                    <p><strong>Binary Types:</strong> bytes, bytearray, memoryview</p>
+                    
+                    <p>Getting the data type of a variable is important for understanding what operations can be performed on it. In Python, you can get the data type of any object by using the type() function.</p>
+                    
+                    <p>Variables in Python are created when you assign a value to them. Unlike other programming languages, Python has no command for declaring a variable. A variable is created the moment you first assign a value to it.</p>
+                    
+                    <p>Variables do not need to be declared with any particular type, and can even change type after they have been set. This is known as dynamic typing, which is a feature of Python that allows for more flexibility but can also lead to runtime errors if not handled properly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MCQ Section -->
+        <section class="mcq-section">
+            <div class="mcq-content">
+                <h2 class="mcq-title">Multiple Choice Questions</h2>
+                
+                <!-- Question 1 -->
+                <div class="question-container" data-question="1">
+                    <div class="question-text">1. Which of the following is NOT a built-in data type in Python?</div>
+                    <div class="options-container">
+                        <div class="option" data-option="A">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">int</div>
+                        </div>
+                        <div class="option" data-option="B">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">float</div>
+                        </div>
+                        <div class="option" data-option="C">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">double</div>
+                        </div>
+                        <div class="option" data-option="D">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">str</div>
+                        </div>
+                    </div>
+                    <div class="explanation-container" id="explanation1">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text">Python does not have a 'double' data type like some other languages (e.g., Java, C++). In Python, floating-point numbers are represented using the 'float' type, which is actually implemented as a double-precision floating-point number internally.</div>
+                        <div class="video-container">
+                            <div class="video-placeholder">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question 2 -->
+                <div class="question-container" data-question="2">
+                    <div class="question-text">2. What is the output of type(3.14) in Python?</div>
+                    <div class="options-container">
+                        <div class="option" data-option="A">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">int</div>
+                        </div>
+                        <div class="option" data-option="B">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">float</div>
+                        </div>
+                        <div class="option" data-option="C">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">decimal</div>
+                        </div>
+                        <div class="option" data-option="D">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">number</div>
+                        </div>
+                    </div>
+                    <div class="explanation-container" id="explanation2">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text">In Python, numbers with decimal points are represented as 'float' type. The type() function returns the data type of the object passed to it. Since 3.14 contains a decimal point, it is treated as a floating-point number.</div>
+                        <div class="video-container">
+                            <div class="video-placeholder">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question 3 -->
+                <div class="question-container" data-question="3">
+                    <div class="question-text">3. Which of the following is a mutable data type in Python?</div>
+                    <div class="options-container">
+                        <div class="option" data-option="A">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">tuple</div>
+                        </div>
+                        <div class="option" data-option="B">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">str</div>
+                        </div>
+                        <div class="option" data-option="C">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">list</div>
+                        </div>
+                        <div class="option" data-option="D">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">int</div>
+                        </div>
+                    </div>
+                    <div class="explanation-container" id="explanation3">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text">Mutable objects can be changed after creation. In Python, lists are mutable, meaning you can add, remove, or modify elements. Tuples, strings, and integers are immutable - once created, they cannot be changed.</div>
+                        <div class="video-container">
+                            <div class="video-placeholder">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question 4 -->
+                <div class="question-container" data-question="4">
+                    <div class="question-text">4. How do you check the data type of a variable in Python?</div>
+                    <div class="options-container">
+                        <div class="option" data-option="A">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">Using typeof() function</div>
+                        </div>
+                        <div class="option" data-option="B">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">Using dtype() function</div>
+                        </div>
+                        <div class="option" data-option="C">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">Using type() function</div>
+                        </div>
+                        <div class="option" data-option="D">
+                            <div class="custom-checkbox"></div>
+                            <div class="option-text">Using datatype() function</div>
+                        </div>
+                    </div>
+                    <div class="explanation-container" id="explanation4">
+                        <div class="explanation-title">Explanation</div>
+                        <div class="explanation-text">Python provides the built-in type() function to determine the data type of any object. This is different from languages like JavaScript which use typeof operator or other languages that might have different syntax.</div>
+                        <div class="video-container">
+                            <div class="video-placeholder">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dismissible Results Panel -->
+            <div class="results-panel" id="resultsPanel">
+                <div class="results-header">
+                    <div class="results-title">Your Results</div>
+                    <div class="results-stats">
+                        <div class="stat correct">
+                            <div class="stat-value" id="correctCount">0</div>
+                            <div class="stat-label">Correct</div>
+                        </div>
+                        <div class="stat incorrect">
+                            <div class="stat-value" id="incorrectCount">4</div>
+                            <div class="stat-label">Incorrect</div>
+                        </div>
+                    </div>
+                    <button class="dismiss-button" id="dismissResults" title="Dismiss Results">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="results-message">
+                    <span id="resultsMessage">Check the explanations below each question to understand your mistakes.</span>
+                    <button class="show-results-button" id="showResultsButton">Show Results</button>
+                </div>
+            </div>
+            
+            <!-- Buttons with Spacing -->
+            <div class="buttons-container">
+                <button class="action-button submit-button" id="submitButton">
+                    <i class="fas fa-paper-plane"></i> Submit Answers
+                </button>
+                <button class="action-button reset-button" id="resetButton">
+                    <i class="fas fa-redo"></i> Reset Quiz
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-button" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-option">
+                    <label for="themeSelect">Theme</label>
+                    <div class="theme-toggle">
+                        <div class="theme-option active" data-theme="light">Light</div>
+                        <div class="theme-option" data-theme="dark">Dark</div>
+                    </div>
+                </div>
+                <div class="setting-option">
+                    <label for="fontSizeSlider">Font Size</label>
+                    <div class="slider-container">
+                        <span>A</span>
+                        <input type="range" id="fontSizeSlider" min="12" max="24" value="16">
+                        <span>A</span>
+                        <span class="font-size-value" id="fontSizeValue">16px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get current page number from URL
+        function getCurrentPageNumber() {
+            const url = window.location.pathname;
+            const match = url.match(/\/(\d+)\.html$/);
+            return match ? parseInt(match[1]) : 1;
+        }
+        
+        const currentPage = getCurrentPageNumber();
+        const localStorageKey = `dms-page-${currentPage}`;
+        
+        // Correct answers dictionary
+        const correctAnswers = {
+            1: "C", // Question 1 correct answer is C
+            2: "B", // Question 2 correct answer is B
+            3: "C", // Question 3 correct answer is C
+            4: "C"  // Question 4 correct answer is C
+        };
+        
+        // Question data with explanations
+        const questionData = {
+            1: {
+                correct: "C",
+                explanation: "Python does not have a 'double' data type like some other languages (e.g., Java, C++). In Python, floating-point numbers are represented using the 'float' type, which is actually implemented as a double-precision floating-point number internally.",
+                videoUrl: "https://www.youtube.com/embed/example1"
+            },
+            2: {
+                correct: "B",
+                explanation: "In Python, numbers with decimal points are represented as 'float' type. The type() function returns the data type of the object passed to it. Since 3.14 contains a decimal point, it is treated as a floating-point number.",
+                videoUrl: "https://www.youtube.com/embed/example2"
+            },
+            3: {
+                correct: "C",
+                explanation: "Mutable objects can be changed after creation. In Python, lists are mutable, meaning you can add, remove, or modify elements. Tuples, strings, and integers are immutable - once created, they cannot be changed.",
+                videoUrl: "https://www.youtube.com/embed/example3"
+            },
+            4: {
+                correct: "C",
+                explanation: "Python provides the built-in type() function to determine the data type of any object. This is different from languages like JavaScript which use typeof operator or other languages that might have different syntax.",
+                videoUrl: "https://www.youtube.com/embed/example4"
+            }
+        };
+        
+        // State variables
+        let selectedAnswers = {};
+        let elapsedTime = 0; // Time in seconds
+        let stopwatchInterval;
+        let isSubmitted = false;
+        let startTime = null;
+        let isResultsVisible = true;
+        
+        // Initialize from localStorage - FIXED RELOAD ISSUE
+        function initializeFromLocalStorage() {
+            try {
+                // Load theme
+                const theme = localStorage.getItem('dms-theme') || 'light';
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    document.querySelectorAll('[data-theme="dark"]').forEach(el => el.classList.add('active'));
+                    document.querySelectorAll('[data-theme="light"]').forEach(el => el.classList.remove('active'));
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    document.querySelectorAll('[data-theme="light"]').forEach(el => el.classList.add('active'));
+                    document.querySelectorAll('[data-theme="dark"]').forEach(el => el.classList.remove('active'));
+                }
+                
+                // Load font size
+                const fontSize = localStorage.getItem('dms-font-size') || '16';
+                document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+                document.getElementById('fontSizeSlider').value = fontSize;
+                document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+                
+                // Load page progress - FIXED: Handle corrupted or missing data
+                let pageProgress = null;
+                try {
+                    const progressData = localStorage.getItem(localStorageKey);
+                    if (progressData) {
+                        pageProgress = JSON.parse(progressData);
+                    }
+                } catch (e) {
+                    console.warn('Could not parse page progress, starting fresh');
+                    localStorage.removeItem(localStorageKey);
+                    pageProgress = null;
+                }
+                
+                if (pageProgress) {
+                    // Validate and restore progress data
+                    selectedAnswers = pageProgress.answers || {};
+                    isSubmitted = pageProgress.submitted || false;
+                    elapsedTime = pageProgress.elapsedTime || 0;
+                    
+                    // Handle startTime - check if it's a valid date
+                    if (pageProgress.startTime) {
+                        try {
+                            startTime = new Date(pageProgress.startTime);
+                            if (isNaN(startTime.getTime())) {
+                                startTime = new Date();
+                            }
+                        } catch (e) {
+                            startTime = new Date();
+                        }
+                    } else {
+                        startTime = new Date();
+                    }
+                    
+                    isResultsVisible = pageProgress.resultsVisible !== undefined ? pageProgress.resultsVisible : true;
+                    
+                    // Validate selected answers
+                    if (typeof selectedAnswers !== 'object') {
+                        selectedAnswers = {};
+                    }
+                    
+                    if (isSubmitted) {
+                        // Restore submitted state
+                        restoreSubmittedState();
+                        updateStopwatchDisplay();
+                        
+                        // Set results panel visibility
+                        if (!isResultsVisible) {
+                            document.getElementById('resultsPanel').classList.remove('show');
+                            document.getElementById('showResultsButton').style.display = 'block';
+                        } else {
+                            document.getElementById('resultsPanel').classList.add('show');
+                            document.getElementById('showResultsButton').style.display = 'none';
+                        }
+                    } else {
+                        // Restore in-progress state
+                        restoreSelectedAnswers();
+                        if (startTime) {
+                            // Calculate elapsed time since start
+                            const now = new Date();
+                            elapsedTime = Math.floor((now - startTime) / 1000);
+                        }
+                        startStopwatch();
+                    }
+                } else {
+                    // First time visiting or corrupted data, start fresh
+                    console.log('Starting fresh for page', currentPage);
+                    startTime = new Date();
+                    startStopwatch();
+                    
+                    // Initialize with empty state
+                    selectedAnswers = {};
+                    isSubmitted = false;
+                    elapsedTime = 0;
+                    isResultsVisible = true;
+                    
+                    // Save initial state
+                    savePageProgress();
+                }
+                
+                // Update page title
+                try {
+                    const itemsData = localStorage.getItem('dms-items');
+                    if (itemsData) {
+                        const items = JSON.parse(itemsData);
+                        const currentItem = items.find(item => item.id === currentPage);
+                        if (currentItem) {
+                            document.getElementById('pageTitle').textContent = `Day ${currentPage}: ${currentItem.name}`;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Could not load item data');
+                }
+                
+            } catch (error) {
+                console.error('Error initializing page:', error);
+                // Start fresh on error
+                resetToDefaultState();
+            }
+        }
+        
+        // Reset to default state
+        function resetToDefaultState() {
+            selectedAnswers = {};
+            elapsedTime = 0;
+            isSubmitted = false;
+            isResultsVisible = true;
+            startTime = new Date();
+            
+            // Clear corrupted localStorage
+            localStorage.removeItem(localStorageKey);
+            
+            // Reset UI
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect', 'disabled');
+                option.style.cursor = 'pointer';
+            });
+            
+            document.querySelectorAll('.explanation-container').forEach(explanation => {
+                explanation.classList.remove('show');
+            });
+            
+            document.getElementById('resultsPanel').classList.remove('show');
+            document.getElementById('showResultsButton').style.display = 'none';
+            
+            // Start fresh
+            startStopwatch();
+            updateSubmitButtonState();
+            
+            // Save fresh state
+            savePageProgress();
+        }
+        
+        // Save page progress to localStorage - FIXED: More robust saving
+        function savePageProgress() {
+            try {
+                const progress = {
+                    answers: selectedAnswers,
+                    submitted: isSubmitted,
+                    elapsedTime: elapsedTime,
+                    startTime: startTime ? startTime.toISOString() : new Date().toISOString(),
+                    resultsVisible: isResultsVisible,
+                    timestamp: new Date().toISOString(),
+                    pageVersion: '1.0' // Version identifier for future compatibility
+                };
+                
+                // Stringify with error handling
+                const progressString = JSON.stringify(progress);
+                localStorage.setItem(localStorageKey, progressString);
+                
+                // Verify save worked
+                const verify = localStorage.getItem(localStorageKey);
+                if (!verify) {
+                    throw new Error('Failed to save to localStorage');
+                }
+                
+            } catch (error) {
+                console.error('Error saving page progress:', error);
+                // Try with smaller data if storage is full
+                try {
+                    const fallbackProgress = {
+                        answers: selectedAnswers,
+                        submitted: isSubmitted,
+                        elapsedTime: elapsedTime,
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem(localStorageKey, JSON.stringify(fallbackProgress));
+                } catch (fallbackError) {
+                    console.error('Fallback save also failed:', fallbackError);
+                }
+            }
+        }
+        
+        // Restore submitted state
+        function restoreSubmittedState() {
+            // Mark answers and show explanations
+            Object.keys(selectedAnswers).forEach(questionNumber => {
+                const userAnswer = selectedAnswers[questionNumber];
+                const correctAnswer = correctAnswers[questionNumber];
+                const questionContainer = document.querySelector(`[data-question="${questionNumber}"]`);
+                
+                if (!questionContainer) return;
+                
+                // Disable all options
+                questionContainer.querySelectorAll('.option').forEach(option => {
+                    option.classList.add('disabled');
+                    option.style.cursor = 'not-allowed';
+                });
+                
+                // Show explanation
+                const explanation = document.getElementById(`explanation${questionNumber}`);
+                if (explanation) {
+                    explanation.classList.add('show');
+                }
+                
+                // Mark selected option
+                const selectedOption = questionContainer.querySelector(`.option[data-option="${userAnswer}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                    
+                    // Mark correct/incorrect based on answer
+                    if (userAnswer === correctAnswer) {
+                        selectedOption.classList.add('correct');
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                        
+                        // Also mark the correct answer
+                        const correctOption = questionContainer.querySelector(`.option[data-option="${correctAnswer}"]`);
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                }
+            });
+            
+            // Calculate and show results
+            calculateAndShowResults();
+            
+            // Update submit button
+            document.getElementById('submitButton').disabled = true;
+            document.getElementById('submitButton').innerHTML = '<i class="fas fa-check"></i> Submitted';
+            
+            // Stop stopwatch
+            stopStopwatch();
+        }
+        
+        // Restore selected answers for in-progress state
+        function restoreSelectedAnswers() {
+            Object.keys(selectedAnswers).forEach(questionNumber => {
+                const option = document.querySelector(`[data-question="${questionNumber}"] .option[data-option="${selectedAnswers[questionNumber]}"]`);
+                if (option) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            // Update submit button state
+            updateSubmitButtonState();
+        }
+        
+        // Calculate and show results
+        function calculateAndShowResults() {
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            Object.keys(correctAnswers).forEach(questionNumber => {
+                const userAnswer = selectedAnswers[questionNumber];
+                const correctAnswer = correctAnswers[questionNumber];
+                
+                if (userAnswer === correctAnswer) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+            });
+            
+            // Update results panel
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('incorrectCount').textContent = incorrectCount;
+            
+            // Show completion message
+            if (incorrectCount === 0) {
+                document.getElementById('resultsMessage').textContent = "Excellent! All answers correct!";
+            } else if (correctCount >= 3) {
+                document.getElementById('resultsMessage').textContent = "Good job! You got most answers correct.";
+            } else {
+                document.getElementById('resultsMessage').textContent = "Review the explanations below each question to improve your understanding.";
+            }
+        }
+        
+        // Update main dashboard progress
+        function updateMainDashboardProgress(isCorrect) {
+            try {
+                const itemsData = localStorage.getItem('dms-items');
+                if (itemsData) {
+                    const items = JSON.parse(itemsData);
+                    const currentItemIndex = items.findIndex(item => item.id === currentPage);
+                    
+                    if (currentItemIndex !== -1) {
+                        // Mark as completed in main dashboard
+                        items[currentItemIndex].completed = true;
+                        items[currentItemIndex].lastUpdated = new Date().toISOString();
+                        
+                        // If any answer is incorrect, mark as need review
+                        if (!isCorrect) {
+                            items[currentItemIndex].needsReview = true;
+                        }
+                        
+                        localStorage.setItem('dms-items', JSON.stringify(items));
+                        
+                        // Update calendar
+                        updateCalendar();
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating main dashboard:', error);
+            }
+        }
+        
+        // Update calendar
+        function updateCalendar() {
+            try {
+                const calendarData = JSON.parse(localStorage.getItem('dms-calendar') || '{}');
+                const today = new Date().toISOString().split('T')[0];
+                
+                calendarData[today] = true;
+                localStorage.setItem('dms-calendar', JSON.stringify(calendarData));
+            } catch (error) {
+                console.error('Error updating calendar:', error);
+            }
+        }
+        
+        // Update submit button state
+        function updateSubmitButtonState() {
+            const submitButton = document.getElementById('submitButton');
+            const selectedCount = Object.keys(selectedAnswers).length;
+            
+            if (selectedCount === 4 && !isSubmitted) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+        
+        // Stopwatch functions
+        function startStopwatch() {
+            if (stopwatchInterval) clearInterval(stopwatchInterval);
+            
+            // If we're continuing from saved state, use existing elapsedTime
+            // Otherwise start from 0
+            if (!elapsedTime && elapsedTime !== 0) {
+                elapsedTime = 0;
+            }
+            
+            stopwatchInterval = setInterval(() => {
+                elapsedTime++;
+                updateStopwatchDisplay();
+                // Auto-save progress every 30 seconds
+                if (elapsedTime % 30 === 0) {
+                    savePageProgress();
+                }
+            }, 1000);
+        }
+        
+        function updateStopwatchDisplay() {
+            const hours = Math.floor(elapsedTime / 3600);
+            const minutes = Math.floor((elapsedTime % 3600) / 60);
+            const seconds = elapsedTime % 60;
+            
+            document.getElementById('stopwatch').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function stopStopwatch() {
+            if (stopwatchInterval) {
+                clearInterval(stopwatchInterval);
+                stopwatchInterval = null;
+            }
+        }
+        
+        // Submit answers
+        function submitAnswers() {
+            if (isSubmitted) return;
+            
+            isSubmitted = true;
+            stopStopwatch();
+            
+            // Check each question
+            Object.keys(correctAnswers).forEach(questionNumber => {
+                const userAnswer = selectedAnswers[questionNumber];
+                const correctAnswer = correctAnswers[questionNumber];
+                const questionContainer = document.querySelector(`[data-question="${questionNumber}"]`);
+                
+                if (!questionContainer) return;
+                
+                // Disable all options
+                questionContainer.querySelectorAll('.option').forEach(option => {
+                    option.classList.add('disabled');
+                    option.style.cursor = 'not-allowed';
+                });
+                
+                // Show explanation
+                const explanation = document.getElementById(`explanation${questionNumber}`);
+                if (explanation) {
+                    explanation.classList.add('show');
+                }
+                
+                // Mark selected option
+                const selectedOption = questionContainer.querySelector(`.option[data-option="${userAnswer}"]`);
+                if (selectedOption) {
+                    // Mark correct/incorrect based on answer
+                    if (userAnswer === correctAnswer) {
+                        selectedOption.classList.add('correct');
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                        
+                        // Also mark the correct answer
+                        const correctOption = questionContainer.querySelector(`.option[data-option="${correctAnswer}"]`);
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                }
+            });
+            
+            // Calculate results
+            let correctCount = 0;
+            let incorrectCount = 0;
+            
+            Object.keys(correctAnswers).forEach(questionNumber => {
+                const userAnswer = selectedAnswers[questionNumber];
+                const correctAnswer = correctAnswers[questionNumber];
+                
+                if (userAnswer === correctAnswer) {
+                    correctCount++;
+                } else {
+                    incorrectCount++;
+                }
+            });
+            
+            // Update results panel
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('incorrectCount').textContent = incorrectCount;
+            
+            // Show results panel by default
+            isResultsVisible = true;
+            document.getElementById('resultsPanel').classList.add('show');
+            document.getElementById('showResultsButton').style.display = 'none';
+            
+            // Update submit button
+            document.getElementById('submitButton').disabled = true;
+            document.getElementById('submitButton').innerHTML = '<i class="fas fa-check"></i> Submitted';
+            
+            // Save progress
+            savePageProgress();
+            
+            // Update main dashboard
+            updateMainDashboardProgress(incorrectCount === 0);
+            
+            // Show completion message
+            if (incorrectCount === 0) {
+                document.getElementById('resultsMessage').textContent = "Excellent! All answers correct!";
+            } else if (correctCount >= 3) {
+                document.getElementById('resultsMessage').textContent = "Good job! You got most answers correct.";
+            } else {
+                document.getElementById('resultsMessage').textContent = "Review the explanations below each question to improve your understanding.";
+            }
+        }
+        
+        // Dismiss results panel
+        function dismissResults() {
+            isResultsVisible = false;
+            document.getElementById('resultsPanel').style.animation = 'slideDown 0.3s ease';
+            
+            setTimeout(() => {
+                document.getElementById('resultsPanel').classList.remove('show');
+                document.getElementById('resultsPanel').style.animation = '';
+                document.getElementById('showResultsButton').style.display = 'block';
+                savePageProgress();
+            }, 300);
+        }
+        
+        // Show results panel
+        function showResultsPanel() {
+            isResultsVisible = true;
+            document.getElementById('resultsPanel').classList.add('show');
+            document.getElementById('showResultsButton').style.display = 'none';
+            savePageProgress();
+        }
+        
+        // Reset quiz for this page only
+        function resetQuiz() {
+            if (!confirm("Reset this quiz? Your progress on this page will be lost, but your main dashboard progress will remain.")) {
+                return;
+            }
+            
+            // Clear local storage for this page
+            localStorage.removeItem(localStorageKey);
+            
+            // Reset state
+            selectedAnswers = {};
+            elapsedTime = 0;
+            isSubmitted = false;
+            isResultsVisible = true;
+            startTime = new Date();
+            
+            // Reset UI
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect', 'disabled');
+                option.style.cursor = 'pointer';
+            });
+            
+            document.querySelectorAll('.explanation-container').forEach(explanation => {
+                explanation.classList.remove('show');
+            });
+            
+            document.getElementById('resultsPanel').classList.remove('show');
+            document.getElementById('showResultsButton').style.display = 'none';
+            
+            // Reset stopwatch
+            stopStopwatch();
+            updateStopwatchDisplay();
+            startStopwatch();
+            
+            // Reset submit button
+            document.getElementById('submitButton').disabled = true;
+            document.getElementById('submitButton').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answers';
+            
+            updateSubmitButtonState();
+            
+            // Save initial state
+            savePageProgress();
+        }
+        
+        // Event Listeners
+        function setupEventListeners() {
+            // Option selection
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (isSubmitted) return;
+                    
+                    const questionContainer = this.closest('.question-container');
+                    const questionNumber = questionContainer.getAttribute('data-question');
+                    const optionValue = this.getAttribute('data-option');
+                    
+                    // Deselect other options in same question
+                    questionContainer.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select this option
+                    this.classList.add('selected');
+                    
+                    // Save answer
+                    selectedAnswers[questionNumber] = optionValue;
+                    savePageProgress();
+                    
+                    updateSubmitButtonState();
+                });
+            });
+            
+            // Submit button
+            document.getElementById('submitButton').addEventListener('click', submitAnswers);
+            
+            // Reset button
+            document.getElementById('resetButton').addEventListener('click', resetQuiz);
+            
+            // Dismiss results button
+            document.getElementById('dismissResults').addEventListener('click', dismissResults);
+            
+            // Show results button
+            document.getElementById('showResultsButton').addEventListener('click', showResultsPanel);
+            
+            // Settings button
+            document.getElementById('settingsButton').addEventListener('click', () => {
+                document.getElementById('settingsModal').style.display = 'flex';
+            });
+            
+            // Close settings
+            document.getElementById('closeSettings').addEventListener('click', () => {
+                document.getElementById('settingsModal').style.display = 'none';
+            });
+            
+            // Home button
+            document.getElementById('homeButton').addEventListener('click', () => {
+                window.location.href = '../index.html';
+            });
+            
+            // Close modal on outside click
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+            
+            // Theme selection
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    localStorage.setItem('dms-theme', theme);
+                    
+                    // Update active state
+                    document.querySelectorAll('.theme-option').forEach(el => el.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Apply theme
+                    if (theme === 'dark') {
+                        document.body.classList.add('dark-theme');
+                    } else {
+                        document.body.classList.remove('dark-theme');
+                    }
+                });
+            });
+            
+            // Font size slider
+            document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
+                const fontSize = e.target.value;
+                document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+                document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+                localStorage.setItem('dms-font-size', fontSize);
+            });
+            
+            // Handle orientation change
+            window.addEventListener('orientationchange', checkOrientation);
+            window.addEventListener('resize', checkOrientation);
+            
+            // Save before page unload
+            window.addEventListener('beforeunload', () => {
+                savePageProgress();
+            });
+            
+            // Save on visibility change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    savePageProgress();
+                }
+            });
+        }
+        
+        // Check orientation and show/hide warning
+        function checkOrientation() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const mobileWarning = document.querySelector('.mobile-warning');
+            const contentContainer = document.querySelector('.content-container');
+            
+            if (window.innerWidth <= 768) {
+                if (isPortrait) {
+                    mobileWarning.style.display = 'flex';
+                    contentContainer.style.display = 'none';
+                } else {
+                    mobileWarning.style.display = 'none';
+                    contentContainer.style.display = 'flex';
+                }
+            } else {
+                mobileWarning.style.display = 'none';
+                contentContainer.style.display = 'flex';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFromLocalStorage();
+            setupEventListeners();
+            checkOrientation();
+            updateSubmitButtonState();
+        });
+    </script>
+</body>
+</html>
